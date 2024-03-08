@@ -27,6 +27,16 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 def dismiss_login_popup(driver, timeout=5):
+    """
+    Dismisses the login popup within a specified timeout period.
+
+    Args:
+    - driver: The Selenium WebDriver instance.
+    - timeout: The maximum time to wait for the login popup.
+
+    Returns:
+    - None
+    """
     try:
         login_popup = WebDriverWait(driver, timeout).until(
             EC.presence_of_element_located(
@@ -57,12 +67,21 @@ def dismiss_login_popup(driver, timeout=5):
 
 
 def get_search_query():
+    """
+    Prompt the user to enter a search query.
+
+    Returns:
+    - The search query entered by the user.
+    """
     search_query = input("Enter your search query: ")
 
     return search_query
 
 
 def parse_args():
+    """
+    Parse command-line arguments using the argparse module.
+    """
     parser = argparse.ArgumentParser(
         description="Grailed scraper for Final Create Task"
     )
@@ -115,20 +134,60 @@ def generate_unique_filename(filename):
 
 
 def save_as_json(df, filename):
+    """
+    Save a DataFrame to a JSON file.
+    """
     with open(f"{filename}.json", "w", encoding="utf-8") as json_file:
         json.dump(df.to_dict(orient="records"), json_file, indent=4)
 
 
 def save_as_csv(df, filename):
+    """
+    Save a DataFrame to a CSV file.
+    """
     df.to_csv(f"{filename}.csv", index=False)
 
 
 def save_as_yaml(df, filename):
+    """
+    Save a DataFrame to a YAML file.
+    """
     with open(f"{filename}.yaml", "w", encoding="utf-8") as yaml_file:
         yaml.safe_dump(df.to_dict(orient="records"), yaml_file)
 
 
+def save_output_to_file(df, output_filename, args):
+    """
+    Save the DataFrame to a file based on the specified output format.
+
+    Args:
+    - df: The Pandas DataFrame to be saved.
+    - output_filename: The name of the output file.
+    - args: The command-line arguments containing information about the output format.
+
+    Returns:
+    - None
+    """
+    if args.json:
+        save_as_json(df, output_filename)
+    elif args.csv:
+        save_as_csv(df, output_filename)
+    elif args.yaml:
+        save_as_yaml(df, output_filename)
+    else:
+        print(df)
+
+
 def accept_cookies(driver):
+    """
+    Accepts cookies on the website by locating and clicking the corresponding button.
+
+    Args:
+    - driver: The Selenium WebDriver instance.
+
+    Returns:
+    - None
+    """
     try:
         cookies_button = WebDriverWait(driver, 2).until(
             EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
@@ -139,6 +198,15 @@ def accept_cookies(driver):
 
 
 def get_to_search_bar_to_search(driver, timeout=2):
+    """
+    Accepts cookies on the website by locating and clicking the corresponding button.
+
+    Args:
+    - driver: The Selenium WebDriver instance.
+
+    Returns:
+    - None
+    """
     try:
         accept_cookies(driver)
 
@@ -166,6 +234,16 @@ def get_to_search_bar_to_search(driver, timeout=2):
 
 # optimize this ?
 def type_search(driver, search):
+    """
+    Enter the provided search query into the search bar and submit the search.
+
+    Args:
+    - driver: The Selenium WebDriver instance.
+    - search: The search query to be entered into the search bar.
+
+    Returns:
+    - None
+    """
     search_bar = driver.find_element(By.CSS_SELECTOR, "#header_search-input")
     submit_button = driver.find_element(By.CSS_SELECTOR, "button[title='Submit']")
 
@@ -175,6 +253,19 @@ def type_search(driver, search):
 
 
 def wait_until_class_count_exceeds(driver, class_name, min_count, timeout=10):
+    """
+    Wait until the number of elements matching the specified class exceeds a minimum count.
+
+    Args:
+    - driver: The Selenium WebDriver instance.
+    - class_name: The CSS class name of the elements to count.
+    - min_count: The minimum number of elements to wait for.
+    - timeout: The maximum time to wait for the condition to be met.
+
+    Returns:
+    - None
+    """
+
     def class_count_exceeds(driver):
         elements = driver.find_elements(By.CSS_SELECTOR, f".{class_name}")
         return len(elements) > min_count
@@ -187,6 +278,15 @@ def wait_until_class_count_exceeds(driver, class_name, min_count, timeout=10):
 
 
 def extract_item_post_times(soup):
+    """
+    Extracts the post times of items from the BeautifulSoup object.
+
+    Args:
+    - soup: The BeautifulSoup object containing the parsed HTML.
+
+    Returns:
+    - A list of post times.
+    """
     return list(
         map(
             lambda time: time.text.split("\xa0ago")[0],
@@ -196,6 +296,15 @@ def extract_item_post_times(soup):
 
 
 def extract_item_titles(soup):
+    """
+    Extracts the titles of items from the BeautifulSoup object.
+
+    Args:
+    - soup: The BeautifulSoup object containing the parsed HTML.
+
+    Returns:
+    - A list of item titles.
+    """
     return list(
         map(
             lambda title: title.text,
@@ -205,6 +314,15 @@ def extract_item_titles(soup):
 
 
 def extract_item_designers(soup):
+    """
+    Extracts the designers of items from the BeautifulSoup object.
+
+    Args:
+    - soup: The BeautifulSoup object containing the parsed HTML.
+
+    Returns:
+    - A list of item designers.
+    """
     return list(
         map(
             lambda designer: designer.text,
@@ -217,6 +335,15 @@ def extract_item_designers(soup):
 
 
 def extract_item_sizes(soup):
+    """
+    Extracts the sizes of items from the BeautifulSoup object.
+
+    Args:
+    - soup: The BeautifulSoup object containing the parsed HTML.
+
+    Returns:
+    - A list of item sizes.
+    """
     return list(
         map(
             lambda size: size.text,
@@ -226,10 +353,28 @@ def extract_item_sizes(soup):
 
 
 def extract_item_prices(soup):
+    """
+    Extracts the prices of items from the BeautifulSoup object.
+
+    Args:
+    - soup: The BeautifulSoup object containing the parsed HTML.
+
+    Returns:
+    - A list of item prices.
+    """
     return list(map(lambda price: price.text, select('[data-testid="Current"]', soup)))
 
 
 def extract_item_listing_link(soup):
+    """
+    Extracts the listing links of items from the BeautifulSoup object.
+
+    Args:
+    - soup: The BeautifulSoup object containing the parsed HTML.
+
+    Returns:
+    - A list of item listing links.
+    """
     return list(
         map(
             lambda listing_link: "https://grailed.com" + listing_link.get("href"),
@@ -239,6 +384,15 @@ def extract_item_listing_link(soup):
 
 
 def configure_driver_options(headless):
+    """
+    Configure the options for the Chrome WebDriver.
+
+    Args:
+    - headless: Boolean value indicating whether to run Chrome in headless mode.
+
+    Returns:
+    - options: The configured ChromeOptions instance.
+    """
     options = Options()
 
     if sys.platform.startswith("win"):
@@ -253,17 +407,46 @@ def configure_driver_options(headless):
 
 
 def get_chrome_driver(options):
+    """
+    Initialize and return a Chrome WebDriver instance with specified options.
+
+    Args:
+    - options: An instance of ChromeOptions configured with desired browser options.
+
+    Returns:
+    - driver: A Chrome WebDriver instance ready for use.
+    """
     return webdriver.Chrome(
         options=options, service=ChromeService(ChromeDriverManager().install())
     )
 
 
 def navigate_to_search_page(driver, base_url):
+    """
+    Navigate to the search page of the website.
+
+    Args:
+    - driver: The Selenium WebDriver instance.
+    - base_url: The base URL of the website.
+
+    Returns:
+    - None
+    """
     driver.get(base_url)
     get_to_search_bar_to_search(driver)
 
 
 def search_for_query(driver, search_query):
+    """
+    Perform a search with the provided query.
+
+    Args:
+    - driver: The Selenium WebDriver instance.
+    - search_query: The search query to be performed.
+
+    Returns:
+    - None
+    """
     if search_query:
         type_search(driver, search_query)
     else:
@@ -272,32 +455,51 @@ def search_for_query(driver, search_query):
 
 
 def wait_for_page_load(driver, class_name, min_count):
+    """
+    Wait for the page to load completely.
+
+    Args:
+    - driver: The Selenium WebDriver instance.
+    - class_name: The CSS class name of an element to wait for.
+    - min_count: The minimum number of elements to wait for.
+
+    Returns:
+    - None
+    """
     wait_until_class_count_exceeds(driver, class_name, min_count)
 
 
 def get_page_soup(driver):
+    """
+    Get a BeautifulSoup object representing the current page source.
+
+    Args:
+    - driver: The Selenium WebDriver instance.
+
+    Returns:
+    - soup: The BeautifulSoup object containing the parsed HTML of the current page.
+    """
     page_source = driver.page_source
     parser = etree.HTMLParser()
     return BeautifulSoup(page_source, "lxml", parser=parser)
 
 
 def extract_data_to_dataframe(soup, data_extraction_functions):
+    """
+    Extract data from the BeautifulSoup object and store it in a Pandas DataFrame.
+
+    Args:
+    - soup: The BeautifulSoup object containing the parsed HTML.
+    - data_extraction_functions: A dictionary mapping column names to functions that extract data for those columns.
+
+    Returns:
+    - df: The Pandas DataFrame containing the extracted data.
+    """
     df = pd.DataFrame(columns=data_extraction_functions.keys())
     for column, func in data_extraction_functions.items():
         df[column] = func()
 
     return df
-
-
-def save_output_to_file(df, output_filename, args):
-    if args.json:
-        save_as_json(df, output_filename)
-    elif args.csv:
-        save_as_csv(df, output_filename)
-    elif args.yaml:
-        save_as_yaml(df, output_filename)
-    else:
-        print(df)
 
 
 def main():

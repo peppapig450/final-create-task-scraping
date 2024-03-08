@@ -19,8 +19,7 @@ prices, titles, designers, sizes, and more, and save it in their preferred file 
 - [X] Pass search term to program via command line or ~~pop-up~~ input.
 - [X] Beautiful soup to parse the prices.
 - [X] Output in either csv or json.
-- [ ] Scrape links to the items and pictures of them.
-
+- [X] Scrape links to the items.
 
 #### Future Posibilites
 ---

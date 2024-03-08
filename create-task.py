@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-from email.mime import base
 import json
 import os
 import re
@@ -57,8 +56,6 @@ def dismiss_login_popup(driver, timeout=5):
         print("Login popup did not appear within the timeout.")
 
 
-# rewrite this to use the click or argparse package -> DONE
-# --search, -s flag | --json, -j flag, --csv, -c flag, --output, -o flag for file output
 def get_search_query():
     search_query = input("Enter your search query: ")
 

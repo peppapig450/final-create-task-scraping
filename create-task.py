@@ -108,7 +108,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def generate_unique_filename(filename):
+def generate_unique_filename(filename, args):
     """
     Generate a unique filename by appending a number to the base filename if it already exists.
 
@@ -118,17 +118,27 @@ def generate_unique_filename(filename):
     Returns:
     - The unique filename.
     """
-    base_filename, extension = os.path.splitext(filename)
+    if args.json:
+        extension = r".json"
+    elif args.csv:
+        extension = ".csv"
+    elif args.yaml:
+        extension = ".yaml"
+    else:
+        return
+
+    base_filename, _ = os.path.splitext(filename)
     match = re.match(r"^(.*)_?(\d+)$", base_filename)
+    count = 1
+
     if match:
         base_filename = match.group(1)
         count = int(match.group(2)) + 1
-        new_filename = f"{base_filename}_{count}{extension}"
-    else:
-        new_filename = f"{base_filename}_1{extension}"
+
+    new_filename = f"{base_filename}_{count}{extension}"
 
     if os.path.exists(new_filename):
-        return generate_unique_filename(new_filename)
+        return generate_unique_filename(new_filename, args)
     else:
         return new_filename
 
@@ -137,7 +147,7 @@ def save_as_json(df, filename):
     """
     Save a DataFrame to a JSON file.
     """
-    with open(f"{filename}.json", "w", encoding="utf-8") as json_file:
+    with open(f"{filename}", "w", encoding="utf-8") as json_file:
         json.dump(df.to_dict(orient="records"), json_file, indent=4)
 
 
@@ -145,14 +155,14 @@ def save_as_csv(df, filename):
     """
     Save a DataFrame to a CSV file.
     """
-    df.to_csv(f"{filename}.csv", index=False)
+    df.to_csv(f"{filename}", index=False)
 
 
 def save_as_yaml(df, filename):
     """
     Save a DataFrame to a YAML file.
     """
-    with open(f"{filename}.yaml", "w", encoding="utf-8") as yaml_file:
+    with open(f"{filename}", "w", encoding="utf-8") as yaml_file:
         yaml.safe_dump(df.to_dict(orient="records"), yaml_file)
 
 
@@ -530,7 +540,7 @@ def main():
         df = extract_data_to_dataframe(soup, data_extraction_functions)
 
         output_filename = generate_unique_filename(
-            args.output if args.output else search_query.replace(" ", "_")
+            args.output if args.output else search_query.replace(" ", "_"), args
         )
 
         save_output_to_file(df, output_filename, args)

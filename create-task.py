@@ -114,6 +114,8 @@ def generate_unique_filename(filename, args):
 
     Args:
     - filename: The original filename to be checked and modified if necessary.
+    - args: The command-line arguments containing information about the output format.
+
 
     Returns:
     - The unique filename.
